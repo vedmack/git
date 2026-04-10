@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Task Helper</title>
+    <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <input class="d-source" id="source" placeholder="Enter TP/JIRA title inlcuding its number (just mark and copy from browser))" />
+
+  <div class="d-data-wrapper">
+    <select class="d-type">
+      <option>feat</option>
+      <option>fix</option>
+      <option>refactor</option>
+    </select>
+  </div>
+  
+  <div class="d-data-wrapper">
+    <textarea class="d-branch" placeholder="Branch name" spellcheck="false"></textarea>
+    <button onclick="copyBranch()" class="material-icons-outlined">content_copy</button>
+  </div>
+
+  <div class="d-data-wrapper">
+    <textarea class="d-comment" placeholder="Comment"></textarea>
+    <button onclick="copyComment()" class="material-icons-outlined" title="Copy comment">content_copy</button>
+  </div>
+
+  <div>
+    <input class="d-jsonkey-in d-data-wrapper" id="jsonkey-in" placeholder="Enter text, it will be converted to uppercase underscore separated" />
+
+    <div class="d-data-wrapper">
+      <textarea class="d-jsonkey-output" placeholder="JSON KEY"></textarea>
+      <button onclick="copyJSONKey()" class="material-icons-outlined" title="Copy comment">content_copy</button>
+    </div>
+  </div>
+</div>
+
+    <script src="script.js"></script>
+</body>
+</html>
