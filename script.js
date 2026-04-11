@@ -7,7 +7,7 @@ const jsonkeyOut = document.querySelector('.d-jsonkey-output');
 // Utility to extract ticket number
 const getTicket = (str) => {
   const match = str.match(/#(\d+)/);
-  // FIX: match extracts the number inside the parentheses only
+  // THE IS THE ONLY DIFFERENCE:
   return match ? match : ''; 
 };
 
