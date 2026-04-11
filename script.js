@@ -7,15 +7,21 @@ const jsonkeyOut = document.querySelector('.d-jsonkey-output');
 var makeBranch = function (str) {
   if (!str) return '';
   let s = str.trim();
+
+  // FIX: Explicitly get the second element which is the number
   const ticketMatch = s.match(/#(\d+)/);
-  const ticket = ticketMatch ? ticketMatch : '';
+  const ticket = (ticketMatch && ticketMatch) ? ticketMatch : '';
+
   s = s.replace(/#\d+/, '').trim();
+
   s = s
     .replaceAll('#', '').replaceAll('>', '').replaceAll('(', '').replaceAll(')', '')
     .replaceAll('+', '').replaceAll('"', '').replaceAll("'", '').replaceAll('\t', '')
     .replaceAll(',', '').replaceAll(':', '').replaceAll('.', '').replaceAll('[', '')
     .replaceAll(']', '').replaceAll('\\', '').replaceAll('/', '');
+
   s = s.replace(/\s+/g, '-').toLowerCase();
+
   return ticket ? `${ticket}-${s}` : s;
 };
 
@@ -23,85 +29,67 @@ var makeComment = function(str) {
   if (!str) return '';
   let strOutcome = str.trim();
   const type = document.querySelector('.d-type');
+
   const ticketMatch = strOutcome.match(/#(\d+)/);
-  const ticket = ticketMatch ? ticketMatch : '';
+  const ticket = (ticketMatch && ticketMatch) ? ticketMatch : '';
+
   strOutcome = strOutcome.replace(/#\d+/, '').trim();
+
   const prefix = ticket ? `${type.value}(#${ticket}):` : `${type.value}:`;
+
   return `${prefix} ${strOutcome}`;
 }
 
 var makeJSONKey = function(str) {
   if (!str) return '';
-  let tmpStrUpper = str.trim();
-  tmpStrUpper = tmpStrUpper.replaceAll(' ', '_').toUpperCase();
+  let tmpStrUpper = str.trim().replaceAll(' ', '_').toUpperCase();
   let tmpStrClient = str.trim().replaceAll(' ', '-').toLowerCase();
+
   tmpStrUpper = '\"' + tmpStrUpper + '\": \"' + upperCaseWords(str) + '\"'
   tmpStrClient = '\"' + tmpStrClient + '\": \"' + str.toLowerCase() + '\"'
   return tmpStrUpper + '\n' + tmpStrClient;
 }
 
 var makeOutput = function(event) {
-  let inputStr = '';
-  if (event.type === 'paste') {
-    inputStr = (event.clipboardData || window.clipboardData).getData("text");
-  } else {
-    inputStr = event.target.value;
-  }
-  // Changed to .value for textarea support
+  let inputStr = (event.type === 'paste') 
+    ? (event.clipboardData || window.clipboardData).getData("text") 
+    : event.target.value;
+
+  // GitHub Pages fix: Textareas use .value, not .textContent
   branch.value = makeBranch(inputStr);
   comment.value = makeComment(inputStr);
 };
 
 var makeJSONKeyOutput = function(event) {
-  let inputStr = '';
-  if (event.type === 'paste') {
-    inputStr = (event.clipboardData || window.clipboardData).getData("text");
-  } else {
-    inputStr = event.target.value;
-  }
-  // Changed to .value for textarea support
+  let inputStr = (event.type === 'paste') 
+    ? (event.clipboardData || window.clipboardData).getData("text") 
+    : event.target.value;
+
   jsonkeyOut.value = makeJSONKey(inputStr);
 };
 
-selectElement.addEventListener('change', makeOutput);
-selectElement.addEventListener('paste', makeOutput);
-selectElement.addEventListener('keyup', makeOutput);
+selectElement.addEventListener('input', makeOutput);
+jsonkeyIn.addEventListener('input', makeJSONKeyOutput);
 
-jsonkeyIn.addEventListener('change', makeJSONKeyOutput);
-jsonkeyIn.addEventListener('paste', makeJSONKeyOutput);
-jsonkeyIn.addEventListener('keyup', makeJSONKeyOutput);
-
-// Attached to window so HTML onclick="copyBranch()" works
+// Global scope fix for GitHub Pages
 window.copyBranch = async function() {
   try {
     await navigator.clipboard.writeText(branch.value);
-    console.log('Content copied to clipboard');
-  } catch (err) {
-    console.error('Failed to copy: ', err);
-  }
+  } catch (err) { console.error(err); }
 }
 
 window.copyComment = async function() {
   try {
     await navigator.clipboard.writeText(comment.value);
-    console.log('Content copied to clipboard');
-  } catch (err) {
-    console.error('Failed to copy: ', err);
-  }
+  } catch (err) { console.error(err); }
 }
 
 window.copyJSONKey = async function() {
   try {
     await navigator.clipboard.writeText(jsonkeyOut.value);
-    console.log('Content copied to clipboard');
-  } catch (err) {
-    console.error('Failed to copy: ', err);
-  }
+  } catch (err) { console.error(err); }
 }
 
 function upperCaseWords(inStr) {
-    let words = inStr.split(' ');
-    let uppercasedWords = words.map(word => word.charAt(0).toUpperCase() + word.slice(1));
-    let outStr = uppercasedWords.join(' ');
-    return outStr;
+    return inStr.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 }
