@@ -9,7 +9,7 @@ var makeBranch = function (str) {
   if (!str) return '';
   let s = str.trim();
   const ticketMatch = s.match(/#(\d+)/);
-  const ticket = ticketMatch ? ticketMatch : '';
+  const ticket = ticketMatch ? ticketMatch[1] : '';
   s = s.replace(/#\d+/, '').trim();
   s = s
     .replaceAll('#', '').replaceAll('>', '').replaceAll('(', '').replaceAll(')', '')
@@ -25,7 +25,7 @@ var makeComment = function(str) {
   let strOutcome = str.trim();
   const type = document.querySelector('.d-type');
   const ticketMatch = strOutcome.match(/#(\d+)/);
-  const ticket = ticketMatch ? ticketMatch : '';
+  const ticket = ticketMatch ? ticketMatch[1] : '';
   strOutcome = strOutcome.replace(/#\d+/, '').trim();
   const prefix = ticket ? `${type.value}(#${ticket}):` : `${type.value}:`;
   return `${prefix} ${strOutcome}`;
