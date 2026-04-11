@@ -7,7 +7,7 @@ const jsonkeyOut = document.querySelector('.d-jsonkey-output');
 // Utility to extract ticket number
 const getTicket = (str) => {
   const match = str.match(/#(\d+)/);
-  return match ? match : ''; // Returns just the digits (e.g., "3070")
+  return match ? match : ''; // Added to get the actual number
 };
 
 var makeBranch = function (str) {
