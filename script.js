@@ -4,26 +4,18 @@ const comment = document.querySelector('.d-comment');
 const jsonkeyIn = document.querySelector('#jsonkey-in');
 const jsonkeyOut = document.querySelector('.d-jsonkey-output');
 
-// Utility to extract ticket number
-const getTicket = (str) => {
-  const match = str.match(/#(\d+)/);
-  // THE IS THE ONLY DIFFERENCE:
-  return match ? match : ''; 
-};
-
 var makeBranch = function (str) {
   if (!str) return '';
   let s = str.trim();
-  const ticket = getTicket(s);
-
-  // Remove the ticket portion (e.g., #3501) from the title string
+  const ticketMatch = s.match(/#(\d+)/);
+  const ticket = ticketMatch ? ticketMatch : '';
   s = s.replace(/#\d+/, '').trim();
-  
-  // Clean special characters and normalize spaces to dashes
-  s = s.replace(/[#>\(\)\+"'\t,:\.\[\]\\\/]/g, ''); 
+  s = s
+    .replaceAll('#', '').replaceAll('>', '').replaceAll('(', '').replaceAll(')', '')
+    .replaceAll('+', '').replaceAll('"', '').replaceAll("'", '').replaceAll('\t', '')
+    .replaceAll(',', '').replaceAll(':', '').replaceAll('.', '').replaceAll('[', '')
+    .replaceAll(']', '').replaceAll('\\', '').replaceAll('/', '');
   s = s.replace(/\s+/g, '-').toLowerCase();
-  
-  // Return format: 3501-my-task-title
   return ticket ? `${ticket}-${s}` : s;
 };
 
@@ -31,72 +23,85 @@ var makeComment = function(str) {
   if (!str) return '';
   let strOutcome = str.trim();
   const type = document.querySelector('.d-type');
-  const ticket = getTicket(strOutcome);
-
-  // Remove the ticket from the title so it doesn't repeat
+  const ticketMatch = strOutcome.match(/#(\d+)/);
+  const ticket = ticketMatch ? ticketMatch : '';
   strOutcome = strOutcome.replace(/#\d+/, '').trim();
-  
-  // Construct the prefix: feat(#3501): or feat:
   const prefix = ticket ? `${type.value}(#${ticket}):` : `${type.value}:`;
-  
   return `${prefix} ${strOutcome}`;
-};
+}
 
 var makeJSONKey = function(str) {
   if (!str) return '';
-  let cleanStr = str.trim();
-  let tmpStrUpper = cleanStr.replaceAll(' ', '_').toUpperCase();
-  let tmpStrClient = cleanStr.replaceAll(' ', '-').toLowerCase();
-  
-  const line1 = `"${tmpStrUpper}": "${upperCaseWords(cleanStr)}"`;
-  const line2 = `"${tmpStrClient}": "${cleanStr.toLowerCase()}"`;
-  return line1 + '\n' + line2;
-};
+  let tmpStrUpper = str.trim();
+  tmpStrUpper = tmpStrUpper.replaceAll(' ', '_').toUpperCase();
+  let tmpStrClient = str.trim().replaceAll(' ', '-').toLowerCase();
+  tmpStrUpper = '\"' + tmpStrUpper + '\": \"' + upperCaseWords(str) + '\"'
+  tmpStrClient = '\"' + tmpStrClient + '\": \"' + str.toLowerCase() + '\"'
+  return tmpStrUpper + '\n' + tmpStrClient;
+}
 
 var makeOutput = function(event) {
-  // Use a slight delay to ensure paste data is fully processed by the browser
-  setTimeout(() => {
-    const inputStr = selectElement.value;
-    branch.value = makeBranch(inputStr);
-    comment.value = makeComment(inputStr);
-  }, 0);
+  let inputStr = '';
+  if (event.type === 'paste') {
+    inputStr = (event.clipboardData || window.clipboardData).getData("text");
+  } else {
+    inputStr = event.target.value;
+  }
+  // Changed to .value for textarea support
+  branch.value = makeBranch(inputStr);
+  comment.value = makeComment(inputStr);
 };
 
 var makeJSONKeyOutput = function(event) {
-  setTimeout(() => {
-    const inputStr = jsonkeyIn.value;
-    jsonkeyOut.value = makeJSONKey(inputStr);
-  }, 0);
+  let inputStr = '';
+  if (event.type === 'paste') {
+    inputStr = (event.clipboardData || window.clipboardData).getData("text");
+  } else {
+    inputStr = event.target.value;
+  }
+  // Changed to .value for textarea support
+  jsonkeyOut.value = makeJSONKey(inputStr);
 };
 
-// Event Listeners
-selectElement.addEventListener('input', makeOutput);
-jsonkeyIn.addEventListener('input', makeJSONKeyOutput);
+selectElement.addEventListener('change', makeOutput);
+selectElement.addEventListener('paste', makeOutput);
+selectElement.addEventListener('keyup', makeOutput);
 
-// Global Copy Functions for HTML onclick
+jsonkeyIn.addEventListener('change', makeJSONKeyOutput);
+jsonkeyIn.addEventListener('paste', makeJSONKeyOutput);
+jsonkeyIn.addEventListener('keyup', makeJSONKeyOutput);
+
+// Attached to window so HTML onclick="copyBranch()" works
 window.copyBranch = async function() {
   try {
     await navigator.clipboard.writeText(branch.value);
-    console.log('Branch copied: ' + branch.value);
-  } catch (err) { console.error('Copy failed', err); }
-};
+    console.log('Content copied to clipboard');
+  } catch (err) {
+    console.error('Failed to copy: ', err);
+  }
+}
 
 window.copyComment = async function() {
   try {
     await navigator.clipboard.writeText(comment.value);
-    console.log('Comment copied: ' + comment.value);
-  } catch (err) { console.error('Copy failed', err); }
-};
+    console.log('Content copied to clipboard');
+  } catch (err) {
+    console.error('Failed to copy: ', err);
+  }
+}
 
 window.copyJSONKey = async function() {
   try {
     await navigator.clipboard.writeText(jsonkeyOut.value);
-    console.log('JSON Key copied');
-  } catch (err) { console.error('Copy failed', err); }
-};
+    console.log('Content copied to clipboard');
+  } catch (err) {
+    console.error('Failed to copy: ', err);
+  }
+}
 
 function upperCaseWords(inStr) {
-  return inStr.split(' ').map(word => 
-    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-  ).join(' ');
+    let words = inStr.split(' ');
+    let uppercasedWords = words.map(word => word.charAt(0).toUpperCase() + word.slice(1));
+    let outStr = uppercasedWords.join(' ');
+    return outStr;
 }
