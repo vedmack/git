@@ -58,6 +58,7 @@ var makeJSONKeyOutput = function() {
 
 // Simplified listeners to avoid "double-processing"
 selectElement.addEventListener('input', makeOutput);
+document.querySelector('.d-type').addEventListener('change', makeOutput);
 jsonkeyIn.addEventListener('input', makeJSONKeyOutput);
 
 // Explicitly mapping to window so your HTML onclick works
