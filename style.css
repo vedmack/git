@@ -1,3 +1,4 @@
+/* 1. Page Styling */
 body {
   font-family: sans-serif;
   display: flex;
@@ -6,14 +7,47 @@ body {
   background-color: #f5f5f5;
 }
 
-input, textarea, select {
+/* 2. Container & Layout (CRITICAL for GitHub Pages) */
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 700px;
+}
+
+.d-data-wrapper {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+}
+
+/* 3. Input & Textarea Sizes */
+.d-source, 
+.d-branch, 
+.d-comment, 
+.d-type, 
+.d-jsonkey-in, 
+.d-jsonkey-output {
+  width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-family: monospace;
 }
 
+.d-branch, .d-comment {
+  height: 50px;
+}
+
+.d-jsonkey-output {
+  height: 100px;
+}
+
+/* 4. Button Styling */
 button {
+  width: 36px;
+  height: 36px;
+  margin-left: 20px;
+  flex-shrink: 0; /* Keeps button from getting squished */
   cursor: pointer;
   background: white;
   border: 1px solid #ccc;
@@ -25,4 +59,10 @@ button {
 
 button:hover {
   background-color: #eee;
+}
+
+select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
