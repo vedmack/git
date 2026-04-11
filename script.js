@@ -7,7 +7,8 @@ const jsonkeyOut = document.querySelector('.d-jsonkey-output');
 // Utility to extract ticket number
 const getTicket = (str) => {
   const match = str.match(/#(\d+)/);
-  return match ? match : ''; // Added to get the actual number
+  // FIX: match extracts the number inside the parentheses only
+  return match ? match : ''; 
 };
 
 var makeBranch = function (str) {
@@ -15,11 +16,14 @@ var makeBranch = function (str) {
   let s = str.trim();
   const ticket = getTicket(s);
 
-  // Remove ticket and clean special characters
+  // Remove the ticket portion (e.g., #3501) from the title string
   s = s.replace(/#\d+/, '').trim();
+  
+  // Clean special characters and normalize spaces to dashes
   s = s.replace(/[#>\(\)\+"'\t,:\.\[\]\\\/]/g, ''); 
   s = s.replace(/\s+/g, '-').toLowerCase();
   
+  // Return format: 3501-my-task-title
   return ticket ? `${ticket}-${s}` : s;
 };
 
@@ -29,7 +33,10 @@ var makeComment = function(str) {
   const type = document.querySelector('.d-type');
   const ticket = getTicket(strOutcome);
 
+  // Remove the ticket from the title so it doesn't repeat
   strOutcome = strOutcome.replace(/#\d+/, '').trim();
+  
+  // Construct the prefix: feat(#3501): or feat:
   const prefix = ticket ? `${type.value}(#${ticket}):` : `${type.value}:`;
   
   return `${prefix} ${strOutcome}`;
@@ -47,7 +54,7 @@ var makeJSONKey = function(str) {
 };
 
 var makeOutput = function(event) {
-  // Use a slight delay for paste events to ensure value is populated
+  // Use a slight delay to ensure paste data is fully processed by the browser
   setTimeout(() => {
     const inputStr = selectElement.value;
     branch.value = makeBranch(inputStr);
