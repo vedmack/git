@@ -4,7 +4,7 @@ const comment = document.querySelector('.d-comment');
 const jsonkeyIn = document.querySelector('#jsonkey-in');
 const jsonkeyOut = document.querySelector('.d-jsonkey-output');
 
-//Daniel Reznick
+//Daniel Reznick.
 var makeBranch = function (str) {
   if (!str) return '';
   let s = str.trim();
